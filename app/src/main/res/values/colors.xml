@@ -8,9 +8,4 @@
     <color name="blue_sky">#1e7ac7</color>
     <color name="sunset_sky">#05192e</color>
     <color name="sea">#224869</color>
-
-    <shape xmlns:android="http://schemas.android.com/apk/res/android"
-           android:shape="oval">
-        <solid android:color="@color/bright_sun"/>
-    </shape>
 </resources>
