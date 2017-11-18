@@ -24,6 +24,9 @@ public class SunsetFragment extends Fragment {
     private int mBlueSkyColor;
     private int mSunsetSkyColor;
     private int mNightSkyColor;
+    private int mMorningSkyColor;
+
+    private boolean isSunset = true;
 
     public static SunsetFragment newInstance(){
         Bundle args = new Bundle();
@@ -45,13 +48,20 @@ public class SunsetFragment extends Fragment {
         mBlueSkyColor = resources.getColor(R.color.blue_sky);
         mSunsetSkyColor = resources.getColor(R.color.sunset_sky);
         mNightSkyColor = resources.getColor(R.color.night_sky);
+        mMorningSkyColor = resources.getColor(R.color.moning_sky);
 
-        mSceveView.setOnClickListener(v -> startAnimation());
+        mSceveView.setOnClickListener(v -> {
+            if(isSunset)
+                startSunSetAnimation();
+            else
+                startSunRiseAnimation();
+            isSunset = !isSunset;
+        });
 
         return view;
     }
 
-    private void startAnimation(){
+    private void startSunSetAnimation(){
         float sunYStart = mSunView.getTop();
         float sunYEnd = mSkyView.getHeight();
 
@@ -75,6 +85,33 @@ public class SunsetFragment extends Fragment {
                 .play(heightAnimator)
                 .with(sunsetSkyAnimator)
                 .before(nightSkyAnimator);
+        animatorSet.start();
+    }
+
+    private void startSunRiseAnimation(){
+        float sunYStart = mSunView.getTop();
+        float sunYEnd = mSkyView.getHeight();
+
+        ObjectAnimator heightAnimator = ObjectAnimator
+                .ofFloat(mSunView, "y", sunYEnd, sunYStart)
+                .setDuration(3000);
+        heightAnimator.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator sunriseSkyAnimator = ObjectAnimator
+                .ofInt(mSkyView, "backgroundColor", mMorningSkyColor, mBlueSkyColor)
+                .setDuration(3000);
+        sunriseSkyAnimator.setEvaluator(new ArgbEvaluator());
+
+        ObjectAnimator moningSkyAnimator = ObjectAnimator
+                .ofInt(mSkyView, "backgroundColor", mNightSkyColor, mMorningSkyColor)
+                .setDuration(1500);
+        moningSkyAnimator.setEvaluator(new ArgbEvaluator());
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet
+                .play(moningSkyAnimator)
+                .before(heightAnimator)
+                .before(sunriseSkyAnimator);
         animatorSet.start();
     }
 }
